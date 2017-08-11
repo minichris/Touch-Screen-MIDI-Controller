@@ -1,15 +1,17 @@
-#include <GFX.h>    // Core graphics library
-#include <SPI.h>       // this is needed for display
-#include <ILI9341.h>
-#include <Wire.h>      // this is needed for FT6206
-#include <FT6206.h>
+#include <Adafruit_GFX.h>
+#include <gfxfont.h>
+#include <Adafruit_ILI9341.h>
+#include <Adafruit_FT6206.h>
 
-FT6206 ctp = FT6206();
+#include <SPI.h>       // this is needed for display
+#include <Wire.h>      // this is needed for FT6206
+
+Adafruit_FT6206 ctp = Adafruit_FT6206();
 #define TFT_CS 9
 #define TFT_DC 7
 #define TFT_HEIGHT 315
 #define TFT_WIDTH 239
-ILI9341 tft = ILI9341(TFT_CS, TFT_DC);
+Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 
 #include <MIDI.h>
 MIDI_CREATE_DEFAULT_INSTANCE();
