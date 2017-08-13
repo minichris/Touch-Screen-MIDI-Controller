@@ -1,41 +1,33 @@
 #include <Adafruit_GFX.h>       // Core graphics library
 #include <SPI.h>                // this is needed for display
-#include <Wire.h>               // this is needed for FT6206
-#include <FT6206.h>             // we need to use this one because the Adafuit one doesn't work with our screen. (This will be fixed by this https://github.com/adafruit/Adafruit_FT6206_Library/pull/5)
+#include <Adafruit_FT6206.h>    // this is needed for FT6206 but we need this version from Blackkettler: https://github.com/blackketter/Adafruit_FT6206_Library (This will be fixed by this https://github.com/adafruit/Adafruit_FT6206_Library/pull/5)
 #include <Adafruit_ILI9341.h>   // this is needed for the display
 #include <MIDI.h>               // MIDI stuff
 
-#define TFT_CS 9
-#define TFT_DC 7
-#define TFT_HEIGHT 315
-#define TFT_WIDTH 239
-#define BASE_COLOR ILI9341_WHITE
+#define TFT_CS 9 // Chip select pin
+#define TFT_DC 7 // Data / control pin
+#define TFT_HEIGHT 315 // set the max height for the display
+#define TFT_WIDTH 239 // set the max width for the display
+#define BASE_COLOR ILI9341_WHITE // colour of the background
 
-FT6206 TouchScreen = FT6206();
-Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
-TS_Point p = TS_Point(0, 0, 0);
-TS_Point p_old  = TS_Point(0, 0, 0);
+Adafruit_FT6206 TouchScreen = Adafruit_FT6206(); //create an instance of the touchscreen
+Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC); //create an instance of the display
+TS_Point p = TS_Point(0, 0, 0); //create a point for the point of touch
+TS_Point p_old  = TS_Point(0, 0, 0); //create a point for the previous point of touch
+MIDI_CREATE_DEFAULT_INSTANCE(); //create an instance for MIDI data to be sent over
 
-
-MIDI_CREATE_DEFAULT_INSTANCE();
 
 void setup(void) {
-  tft.begin();
-  tft.setTextSize(2);
-  tft.setTextColor(ILI9341_BLACK);
-  tft.fillScreen(BASE_COLOR);
-  tft.setCursor(20 , TFT_HEIGHT / 2); //set the location of the text output
-  tft.print("Please wait"); //Tell the user we are calibrating
-  tft.setCursor(20 , (TFT_HEIGHT / 2) + 20); //set the location of the text output
-  tft.print("for calibration..."); //Tell the user we are calibrating
+  tft.begin(); //initalize the display
+  tft.setTextSize(2); //set the display text size
+  tft.setTextColor(ILI9341_BLACK); //set the display color
+  tft.fillScreen(BASE_COLOR); //set the display background colour
   
-  if (!TouchScreen.begin(30)) {  // pass in 'sensitivity' coefficient
-    while (1);
+  if (!TouchScreen.begin(30)) {  // pass in 'sensitivity' coefficient and initalize the touch screen
+    while (1); //wait for the touch screen to begin
   }
-  TouchScreen.autoCalibrate(); //calibrate down
-  
-  MIDI.begin(4);
-  tft.fillScreen(ILI9341_WHITE);
+
+  MIDI.begin(4); //initalize the MIDI
 }
 
 void loop() {
