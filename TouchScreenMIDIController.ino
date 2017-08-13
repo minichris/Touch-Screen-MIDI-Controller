@@ -31,11 +31,7 @@ void setup(void) {
 }
 
 void loop() {
-  // Wait for a touch
-  if (! TouchScreen.touched()) {
-    return; //if we arn't touched this loop, skip to the next loop
-  }
-  else {
+  if ( TouchScreen.touched()) { //if the touch screen was touched this loop
     p = TouchScreen.getPoint(); //get the point of the touch
     int Modulation1 = ((float)p.x / (float)TFT_WIDTH * (float)127); //work out the new modulations
     int Modulation2 = ((float)p.y / (float)TFT_HEIGHT * (float)127);//work out the new modulations
