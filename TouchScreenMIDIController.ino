@@ -6,8 +6,6 @@
 
 #define TFT_CS 9 // Chip select pin
 #define TFT_DC 7 // Data / control pin
-#define TFT_HEIGHT 315 // set the max height for the display
-#define TFT_WIDTH 239 // set the max width for the display
 #define BASE_COLOR ILI9341_WHITE // colour of the background
 
 Adafruit_FT6206 TouchScreen = Adafruit_FT6206(); //create an instance of the touchscreen
@@ -33,8 +31,8 @@ void setup(void) {
 void loop() {
   if ( TouchScreen.touched()) { //if the touch screen was touched this loop
     p = TouchScreen.getPoint(); //get the point of the touch
-    int Modulation1 = ((float)p.x / (float)TFT_WIDTH * (float)127); //work out the new modulations
-    int Modulation2 = ((float)p.y / (float)TFT_HEIGHT * (float)127);//work out the new modulations
+    int Modulation1 = ((float)p.x / (float)ILI9341_TFTWIDTH * (float)127); //work out the new modulations
+    int Modulation2 = ((float)p.y / (float)ILI9341_TFTHEIGHT * (float)127);//work out the new modulations
     
     if(p != p_old){ //if the point of touch has changed
       //pitch, velo, channel
@@ -42,11 +40,11 @@ void loop() {
       MIDI.send(midi::ControlChange, 1, (int)Modulation1, 0xC); //send the MIDI modulation 1 on 0xC
       MIDI.send(midi::ControlChange, 1, (int)Modulation2, 0xD); //send the MIDI modulation 2 on 0xD
       
-      tft.drawFastHLine(0, p_old.y, TFT_WIDTH, BASE_COLOR); //remove the old line by drawing over it
-      tft.drawFastVLine(p_old.x, 0, TFT_HEIGHT, BASE_COLOR); //remove the old line by drawing over it
+      tft.drawFastHLine(0, p_old.y, ILI9341_TFTWIDTH, BASE_COLOR); //remove the old line by drawing over it
+      tft.drawFastVLine(p_old.x, 0, ILI9341_TFTHEIGHT, BASE_COLOR); //remove the old line by drawing over it
       
-      tft.drawFastHLine(0, p.y, TFT_WIDTH, ILI9341_BLACK); //draw a new line
-      tft.drawFastVLine(p.x, 0, TFT_HEIGHT, ILI9341_BLACK); //draw a new line
+      tft.drawFastHLine(0, p.y, ILI9341_TFTWIDTH, ILI9341_BLACK); //draw a new line
+      tft.drawFastVLine(p.x, 0, ILI9341_TFTHEIGHT, ILI9341_BLACK); //draw a new line
 
       // Print out raw data from screen touch controller
       tft.fillRect(150, 150,  36, 36, BASE_COLOR); //remove the previous modulation numbers
