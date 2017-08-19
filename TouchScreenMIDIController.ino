@@ -4,12 +4,10 @@
 #include <Adafruit_ILI9341.h>   // this is needed for the display
 #include <MIDI.h>               // MIDI stuff
 
-#define TFT_CS 9 // Chip select pin
-#define TFT_DC 7 // Data / control pin
 #define BASE_COLOR ILI9341_WHITE // colour of the background
 
 Adafruit_FT6206 TouchScreen = Adafruit_FT6206(); //create an instance of the touchscreen
-Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC); //create an instance of the display
+Adafruit_ILI9341 tft = Adafruit_ILI9341(9, 7); //create an instance of the display (9 is the chip select pin and 7 is the data / control pin)
 TS_Point p = TS_Point(0, 0, 0); //create a point for the point of touch
 TS_Point p_old  = TS_Point(0, 0, 0); //create a point for the previous point of touch
 MIDI_CREATE_DEFAULT_INSTANCE(); //create an instance for MIDI data to be sent over
@@ -21,9 +19,7 @@ void setup(void) {
   tft.setTextColor(ILI9341_BLACK); //set the display color
   tft.fillScreen(BASE_COLOR); //set the display background colour
   
-  if (!TouchScreen.begin(30)) {  // pass in 'sensitivity' coefficient and initalize the touch screen
-    while (1); //wait for the touch screen to begin
-  }
+  TouchScreen.begin(30); // pass in sensitivity coefficient and initalize the touch screen
 
   MIDI.begin(4); //initalize the MIDI
 }
