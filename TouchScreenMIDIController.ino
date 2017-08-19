@@ -27,14 +27,14 @@ void setup(void) {
 void loop() {
   if ( TouchScreen.touched()) { //if the touch screen was touched this loop
     p = TouchScreen.getPoint(); //get the point of the touch
-    int Modulation1 = ((float)p.x / (float)ILI9341_TFTWIDTH * (float)127); //work out the new modulations
-    int Modulation2 = ((float)p.y / (float)ILI9341_TFTHEIGHT * (float)127);//work out the new modulations
     
     if(p != p_old){ //if the point of touch has changed
+      int Effect1 = ((float)p.x / (float)ILI9341_TFTWIDTH * (float)127); //work out the new modulations
+      int Effect2 = ((float)p.y / (float)ILI9341_TFTHEIGHT * (float)127);//work out the new modulations
       //pitch, velo, channel
       //1 is the modulation wheel
-      MIDI.send(midi::ControlChange, 1, (int)Modulation1, 0xC); //send the MIDI modulation 1 on 0xC
-      MIDI.send(midi::ControlChange, 1, (int)Modulation2, 0xD); //send the MIDI modulation 2 on 0xD
+      MIDI.send(midi::ControlChange, 1, (int)Effect1, midi::EffectControl1); //send the MIDI effect amount 1 on EffectControl1
+      MIDI.send(midi::ControlChange, 1, (int)Effect2, midi::EffectControl2); //send the MIDI effect amount 2 on EffectControl2
       
       tft.drawFastHLine(0, p_old.y, ILI9341_TFTWIDTH, BASE_COLOR); //remove the old line by drawing over it
       tft.drawFastVLine(p_old.x, 0, ILI9341_TFTHEIGHT, BASE_COLOR); //remove the old line by drawing over it
@@ -45,9 +45,9 @@ void loop() {
       // Print out raw data from screen touch controller
       tft.fillRect(150, 150,  36, 36, BASE_COLOR); //remove the previous modulation numbers
       tft.setCursor(150 , 150); //set the location of the text output of mod1
-      tft.print(Modulation1); //print it
+      tft.print(Effect1); //print it
       tft.setCursor(150 , 170); //set the location of the text output of mod2
-      tft.print(Modulation2); //print it
+      tft.print(Effect2); //print it
     }
     p_old = p; //set the old point to the current point
   }
