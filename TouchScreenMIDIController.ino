@@ -4,7 +4,7 @@
 #include <Adafruit_ILI9341.h>   // this is needed for the display
 #include <MIDI.h>               // MIDI stuff
 
-#define BASE_COLOR ILI9341_WHITE // colour of the background
+#define BACKGROUND_COLOR ILI9341_WHITE // colour of the background
 
 Adafruit_FT6206 TouchScreen = Adafruit_FT6206(); //create an instance of the touchscreen
 Adafruit_ILI9341 tft = Adafruit_ILI9341(9, 7); //create an instance of the display (9 is the chip select pin and 7 is the data / control pin)
@@ -17,7 +17,7 @@ void setup(void) {
   tft.begin(); //initalize the display
   tft.setTextSize(2); //set the display text size
   tft.setTextColor(ILI9341_BLACK); //set the display color
-  tft.fillScreen(BASE_COLOR); //set the display background colour
+  tft.fillScreen(BACKGROUND_COLOR); //set the display background colour
   
   TouchScreen.begin(30); // pass in sensitivity coefficient and initalize the touch screen
 
@@ -32,21 +32,21 @@ void loop() {
       int Effect1 = ((float)p.x / (float)ILI9341_TFTWIDTH * (float)127); //work out the new modulations
       int Effect2 = ((float)p.y / (float)ILI9341_TFTHEIGHT * (float)127);//work out the new modulations
       //pitch, velo, channel
-      //1 is the modulation wheel
+      //"1" is the unused(?) data 1 value
       MIDI.send(midi::ControlChange, 1, (int)Effect1, midi::EffectControl1); //send the MIDI effect amount 1 on EffectControl1
       MIDI.send(midi::ControlChange, 1, (int)Effect2, midi::EffectControl2); //send the MIDI effect amount 2 on EffectControl2
       
-      tft.drawFastHLine(0, p_old.y, ILI9341_TFTWIDTH, BASE_COLOR); //remove the old line by drawing over it
-      tft.drawFastVLine(p_old.x, 0, ILI9341_TFTHEIGHT, BASE_COLOR); //remove the old line by drawing over it
+      tft.drawFastHLine(0, p_old.y, ILI9341_TFTWIDTH, BACKGROUND_COLOR); //remove the old line by drawing over it
+      tft.drawFastVLine(p_old.x, 0, ILI9341_TFTHEIGHT, BACKGROUND_COLOR); //remove the old line by drawing over it
       
       tft.drawFastHLine(0, p.y, ILI9341_TFTWIDTH, ILI9341_BLACK); //draw a new line
       tft.drawFastVLine(p.x, 0, ILI9341_TFTHEIGHT, ILI9341_BLACK); //draw a new line
 
       // Print out raw data from screen touch controller
-      tft.fillRect(150, 150,  36, 36, BASE_COLOR); //remove the previous modulation numbers
-      tft.setCursor(150 , 150); //set the location of the text output of mod1
+      tft.fillRect(150, 150,  36, 36, BACKGROUND_COLOR); //remove the previous effect numbers
+      tft.setCursor(150 , 150); //set the location of the text output of Effect1
       tft.print(Effect1); //print it
-      tft.setCursor(150 , 170); //set the location of the text output of mod2
+      tft.setCursor(150 , 170); //set the location of the text output of Effect2
       tft.print(Effect2); //print it
     }
     p_old = p; //set the old point to the current point
