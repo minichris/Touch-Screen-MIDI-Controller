@@ -3,6 +3,7 @@
 #include <Adafruit_FT6206.h>    // this is needed for FT6206 but we need this version from Blackkettler: https://github.com/blackketter/Adafruit_FT6206_Library (This will be fixed by this https://github.com/adafruit/Adafruit_FT6206_Library/pull/5)
 #include <Adafruit_ILI9341.h>   // this is needed for the display
 #include <MIDI.h>               // MIDI stuff
+#include "Zac7.c"
 
 #define BACKGROUND_COLOR ILI9341_WHITE // colour of the background
 
@@ -30,9 +31,13 @@ void setup(void) {
 }
 
 void loop() {
-  int PotReading = analogRead(15);
-  if (PotReading <= 8) CurrentMode = 0;
-  if (PotReading > 8) CurrentMode = 1;
+  uint32_t extraBits=0;    // use an unsigned integer or the bit shifting goes wonky
+  for (int k = 0; k< 64; k++) {
+    extraBits = extraBits + analogRead(15);
+  }
+  int PotReading = ((float)extraBits / (float) 64);
+  if (PotReading <= 4) CurrentMode = 0;
+  if (PotReading > 4) CurrentMode = 1;
   if (PotReading > 64) CurrentMode = 2;
   if (PotReading > 128) CurrentMode = 3;
   if (PotReading > 256) CurrentMode = 4;
@@ -46,10 +51,16 @@ void loop() {
     tft.fillScreen(BACKGROUND_COLOR); //reset the screen to white
     tft.setCursor(150 , 190); //set the location of the text output of the mode string
     tft.print("Mode " + String(CurrentMode)); //print it
+    if(CurrentMode == 9) {
+      PrintZac();
+      Piano();
+    }
     PreviousMode = CurrentMode; //set the Previous Mode to the Current Mode
   }
   
   switch(CurrentMode){
+    case 9:
+      break;
     case 10:
       tft.fillScreen(ILI9341_BLACK); //set the screen to black
       break;
@@ -88,5 +99,19 @@ void MIDIpad(int Channel1, int Channel2, int CtrlNumber) {
     }
     p_old = p; //set the old point to the current point
   }
+}
+
+void Piano(){
+  int KeyWidth = (float)ILI9341_TFTHEIGHT / (float)8;
+  int KeyHeight = (float)ILI9341_TFTWIDTH / (float)2;
+  
+  for(int i = 0; i < 8; i++){
+    tft.fillRect(0, i*KeyWidth, KeyHeight, KeyWidth, ILI9341_BLACK);
+    tft.fillRect(5, i*KeyWidth + 5, KeyHeight - 5, KeyWidth - 5, ILI9341_WHITE);
+  }
+}
+
+void PrintZac(){
+  tft.drawRGBBitmap(ILI9341_TFTWIDTH/2 - 110, ILI9341_TFTHEIGHT/2 - 120, Zac7, 110, 120); //http://www.rinkydinkelectronics.com/t_imageconverter565.php
 }
 
