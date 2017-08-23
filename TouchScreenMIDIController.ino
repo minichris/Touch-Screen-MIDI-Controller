@@ -16,6 +16,9 @@ MIDI_CREATE_DEFAULT_INSTANCE(); //create an instance for MIDI data to be sent ov
 int CurrentMode = 0;
 int PreviousMode = 0;
 
+int CurrentNote = 0;
+int PreviousNote = 0;
+
 void setup(void) {
   tft.begin(); //initalize the display
   tft.setTextSize(2); //set the display text size
@@ -60,6 +63,7 @@ void loop() {
   
   switch(CurrentMode){
     case 9:
+      PianoListener();
       break;
     case 10:
       tft.fillScreen(ILI9341_BLACK); //set the screen to black
@@ -108,6 +112,24 @@ void Piano(){
   for(int i = 0; i < 8; i++){
     tft.fillRect(0, i*KeyWidth, KeyHeight, KeyWidth, ILI9341_BLACK);
     tft.fillRect(5, i*KeyWidth + 5, KeyHeight - 5, KeyWidth - 5, ILI9341_WHITE);
+  }
+}
+
+void PianoListener(){
+  int KeyWidth = (float)ILI9341_TFTHEIGHT / (float)8;
+  int KeyHeight = (float)ILI9341_TFTWIDTH / (float)2;
+  if ( TouchScreen.touched()) { //if the touch screen was touched this loop
+    p = TouchScreen.getPoint(); //get the point of the touch
+    CurrentNote = floor((float)p.y / (float)ILI9341_TFTHEIGHT * (float)8);
+    if(CurrentNote != PreviousNote){
+      MIDI.sendNoteOff(30 + PreviousNote, 127, 1);
+      tft.fillRect(5, CurrentNote*KeyWidth + 5, KeyHeight - 5, KeyWidth - 5, ILI9341_RED);
+      MIDI.sendNoteOn(30 + CurrentNote, 127, 1);
+    }
+    PreviousNote = CurrentNote;
+  }
+  else{
+    MIDI.sendNoteOff(30 + PreviousNote, 127, 1);
   }
 }
 
